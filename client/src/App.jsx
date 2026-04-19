@@ -8,17 +8,17 @@ export default function App() {
   const [stats, setStats] = useState(null);
   const [message, setMessage] = useState("");
 
-  // 🔥 DEFAULT INPUT (includes broken + predicted cases)
+  // Default Input (includes broken + predicted cases)
   const [inputData, setInputData] = useState(JSON.stringify([
-    { lat: null, lon: null },          // 🔴 broken
-    { lat: 28.61, lon: 77.20 },        // 🟢 real
-    { lat: 28.62, lon: 77.21 },        // 🟢 real
-    { lat: null, lon: 77.22 },         // 🟡 predicted
+    { lat: null, lon: null },          //  broken
+    { lat: 28.61, lon: 77.20 },        //  real
+    { lat: 28.62, lon: 77.21 },        //  real
+    { lat: null, lon: 77.22 },         //  predicted
 
-    { lat: 19.07, lon: 72.87 },        // 🟢 Mumbai
-    { lat: null, lon: 72.88 },         // 🟡 predicted
+    { lat: 19.07, lon: 72.87 },        // Mumbai
+    { lat: null, lon: 72.88 },         // predicted
 
-    { lat: null, lon: null }           // 🔴 broken again
+    { lat: null, lon: null }           //  broken again
   ], null, 2));
 
   const fetchData = async () => {
@@ -27,7 +27,7 @@ export default function App() {
 
     let sample;
 
-    // ✅ Parse input safely
+    // Parse input safely
     try {
       sample = JSON.parse(inputData);
     } catch (e) {
@@ -38,7 +38,7 @@ export default function App() {
 
     try {
       const res = await axios.post(
-        "http://127.0.0.1:8000/api/process-data/",
+        "https://intelmapx.onrender.com/api/process-data/",
         sample,
         {
           headers: { "Content-Type": "application/json" }
@@ -47,7 +47,7 @@ export default function App() {
 
       const result = res.data;
 
-      // 🔥 Detect anomaly
+      // Detect anomaly
       const hasBroken = sample.some(
         (p) => p.lat === null || p.lon === null
       );
@@ -56,7 +56,7 @@ export default function App() {
         setMessage("⚠️ Data anomaly detected → triggering prediction engine");
       }
 
-      // 🔥 Stats
+      // Stats
       const real = result.filter((p) => p.type === "real").length;
       const predicted = result.filter((p) => p.type === "predicted").length;
       const broken = result.filter((p) => p.type === "broken").length;
